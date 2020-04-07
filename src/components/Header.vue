@@ -3,8 +3,8 @@
         <div class="header-logo">优盟工单系统</div>
         <div class="header-login">
             <div class="login-name" @click="showUl">{{ login }}</div>
-            <ul>
-                <router-link :to="{name: 'changePwd'}" tag="li">修改密码</router-link>
+            <ul v-show="flag">
+                <router-link :to="{name: 'changePwd'}" tag="li"  @click="showUl">修改密码</router-link>
                 <li>退出</li>
             </ul>
         </div>
@@ -16,11 +16,12 @@ export default {
     data() {
         return {
             login: "无锡技术",
+            flag: false,
         };
     },
     methods: {
         showUl(){
-
+            this.flag === true ? this.flag = false : this.flag = true
         }
     }
 };

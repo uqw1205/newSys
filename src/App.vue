@@ -23,6 +23,7 @@ export default {
 @import url(./assets/css/reset.css);
 .sys-content{
 	margin-left: 200px;
-	height: calc(100vh - 60px);
+    height: calc(100vh - 100px);
+	padding: 20px;
 }
 </style>

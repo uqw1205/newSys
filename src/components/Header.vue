@@ -4,8 +4,15 @@
         <div class="header-login">
             <div class="login-name" @click="showUl">{{ login }}</div>
             <ul v-show="flag">
-                <router-link :to="{name: 'changePwd'}" tag="li"  @click="showUl">修改密码</router-link>
-                <li>退出</li>
+                <router-link
+                    :to="{ name: 'changePwd' }"
+                    tag="li"
+                    @click="showUl"
+                    >修改密码</router-link
+                >
+                <router-link :to="{ name: 'showFaq' }" tag="li" @click="showUl"
+                    >退出</router-link
+                >
             </ul>
         </div>
     </div>
@@ -20,10 +27,10 @@ export default {
         };
     },
     methods: {
-        showUl(){
-            this.flag === true ? this.flag = false : this.flag = true
-        }
-    }
+        showUl() {
+            this.flag === true ? (this.flag = false) : (this.flag = true);
+        },
+    },
 };
 </script>
 
@@ -48,11 +55,11 @@ export default {
         color: #fff;
         position: relative;
         width: 150px;
-        .login-name{
-            background: rgba(0,0,0,0.1);
+        .login-name {
+            background: rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            &::after{
-                content: '';
+            &::after {
+                content: "";
                 display: inline-block;
                 width: 0;
                 height: 0;
@@ -69,7 +76,8 @@ export default {
             right: 0;
             width: 149px;
             background: #fff;
-            box-shadow:0 0 3px #999;
+            box-shadow: 0 0 3px #999;
+            z-index: 9;
             li {
                 height: 40px;
                 line-height: 40px;
@@ -77,8 +85,8 @@ export default {
                 color: #333;
                 font-size: 13px;
                 cursor: pointer;
-                &:hover{
-                    background: rgba(0,0,0,0.1);
+                &:hover {
+                    background: rgba(0, 0, 0, 0.1);
                 }
             }
         }

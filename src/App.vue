@@ -25,5 +25,6 @@ export default {
 	margin-left: 200px;
     height: calc(100vh - 100px);
 	padding: 20px;
+    overflow-y: auto;
 }
 </style>

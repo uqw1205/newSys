@@ -4,6 +4,7 @@ import addOrder from '../views/addOrder'
 import orderList from '../views/orderList'
 import changePwd from '../views/changePwd'
 import needList from '../views/needList'
+import showFaq from '../views/showFaq'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
 		path: '/needList',
 		name: 'needList',
 		component: () => import('../views/needList'),
+	},
+	{
+		path: '/showFaq',
+		name: 'showFaq',
+		component: () => import('../views/showFaq'),
 	}
 ]
 

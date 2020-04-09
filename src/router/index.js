@@ -1,10 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import addOrder from '../views/addOrder'
-import orderList from '../views/orderList'
-import changePwd from '../views/changePwd'
-import needList from '../views/needList'
-import showFaq from '../views/showFaq'
 
 Vue.use(VueRouter)
 
@@ -30,10 +25,20 @@ const routes = [
 		component: () => import('../views/needList'),
 	},
 	{
-		path: '/showFaq',
+		path: '/showFaq/:id',
 		name: 'showFaq',
 		component: () => import('../views/showFaq'),
-	}
+	},
+    {
+      path: '*',
+      redirect (to) {
+        if(to.path === '/') {
+          return '/orderList';
+        } else {
+          return '/';
+        }
+      }
+    }
 ]
 
 const router = new VueRouter({

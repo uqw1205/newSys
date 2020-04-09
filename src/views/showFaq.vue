@@ -9,11 +9,15 @@
             </div>
         </div>
         <div class="faq-content">
-            <div class="faq-wrap" v-for="(item, index) in user.desc" :key="index">
+            <div
+                class="faq-wrap"
+                v-for="(item, index) in user.desc"
+                :key="index"
+            >
                 <div class="tit">{{ item.key }}</div>
                 <div class="con">
                     {{ item.ques }}
-                    <img :src=item.image>
+                    <img :src="item.image" />
                 </div>
                 <div class="reply">
                     提交人：{{ item.from }} 提交时间：{{ item.time }}
@@ -61,14 +65,19 @@
 
 <script>
 export default {
+    mounted() {
+        const id = this.$route.params.id;
+        console.log(id);
+        this.getData(id);
+    },
     data() {
         return {
             flag: false,
             user: {
-                key: '',
-                title: '',
-                number: '',
-                business: '',
+                key: "",
+                title: "",
+                number: "",
+                business: "",
             },
         };
     },
@@ -76,13 +85,13 @@ export default {
         handleClick() {
             this.flag = !this.flag;
         },
+        getData(id) {
+            this.$api.getDetail(id).then((data) => {
+                // console.log(data.data.data.list);
+                this.user = data.data.data.list;
+            });
+        },
     },
-    created(){
-        this.$api.getDetail().then((data) => {
-            console.log(data.data.data.list);
-            this.user = data.data.data.list;
-        });
-    }
 };
 </script>
 

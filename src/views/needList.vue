@@ -18,7 +18,11 @@
                     <td>{{ item.type }}</td>
                     <td>{{ item.number }}</td>
                     <td>
-                        <a href="">{{ item.title }}</a>
+                        <router-link
+                            tag="a"
+                            :to="{ name: 'showFaq', params: { id: item.id }}"
+                            >{{ item.title }}</router-link
+                        >
                     </td>
                     <td>{{ item.business }}</td>
                     <td>{{ item.status }}</td>
@@ -33,6 +37,12 @@
 
 <script>
 export default {
+    beforeRouteEnter(to, from, next) {
+        // console.log(this);
+        next((vm) => {
+            // console.log(vm);
+        });
+    },
     data() {
         return {
             list: [],
@@ -41,6 +51,7 @@ export default {
     created() {
         this.$api.getOrder().then((data) => {
             this.list = data.data.data.list;
+            // console.log(this.list)
         });
     },
 };

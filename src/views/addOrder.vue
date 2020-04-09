@@ -76,10 +76,14 @@
                     查询需要处理的公司名
                 </div>
                 <div class="search-form">
-                    <form action="">
-                        <input type="text" />
-                        <button>查找</button>
-                    </form>
+                    <input
+                        type="text"
+                        v-model="searchName"
+                        @keyup.enter="searchBusiness"
+                    />
+                    <button type="button" @click="searchBusiness">
+                        查找
+                    </button>
                 </div>
                 <div class="search-list">
                     <table>
@@ -101,7 +105,16 @@
                                         v-model="user.business"
                                     />
                                 </td>
-                                <td>{{ item.business }}</td>
+                                <td>
+                                    {{ item.business }}
+                                    <router-link
+                                        tag="a"
+                                        :to="{
+                                            name: 'showFaq',
+                                            params: { id: item.id },
+                                        }"
+                                    >123</router-link>
+                                </td>
                                 <td>{{ item.domain }}</td>
                             </tr>
                         </tbody>
@@ -120,7 +133,9 @@ export default {
     data() {
         return {
             list: "",
+            listcopy: "",
             flag: false,
+            searchName: "",
             user: {
                 business: "",
                 faqName: "domain",
@@ -144,13 +159,34 @@ export default {
                 this.$api.addOrder(this.user).then((data) => {});
                 if (window.confirm("添加成功！ 是否跳转到待处理工单？")) {
                     this.$router.push({ path: "/needList" });
+                } else {
+                    this.user = {
+                        business: "",
+                        faqName: "domain",
+                        title: "",
+                        desc: "",
+                    };
                 }
             }
+        },
+        searchBusiness() {
+            var searchName = this.searchName;
+            if (!searchName) {
+                this.list = this.listcopy;
+            }
+            var newList = [];
+            for (var i = 0; i < this.listcopy.length; i++) {
+                if (this.listcopy[i].business.indexOf(searchName) !== -1) {
+                    newList.push(this.listcopy[i]);
+                }
+            }
+            this.list = newList;
         },
     },
     created() {
         this.$api.getBusiness().then((data) => {
             this.list = data.data.data.list;
+            this.listcopy = data.data.data.list;
         });
     },
 };
@@ -248,6 +284,7 @@ export default {
             line-height: 28px;
             border-radius: 2px;
             outline: none;
+            padding: 0 5px;
         }
         button {
             width: 15%;

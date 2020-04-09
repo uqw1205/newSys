@@ -10,9 +10,7 @@
                     @click="showUl"
                     >修改密码</router-link
                 >
-                <router-link :to="{ name: 'showFaq' }" tag="li" @click="showUl"
-                    >退出</router-link
-                >
+                <li>退出</li>
             </ul>
         </div>
     </div>

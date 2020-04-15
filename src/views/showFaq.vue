@@ -1,26 +1,25 @@
 <template>
     <div class="showFaq">
         <div class="faq-tit">
-            <div class="tit">工单题目： {{ user.title }}</div>
-            <div class="num">工单编号： {{ user.number }}</div>
+            <div class="tit">工单题目： {{ list.title }}</div>
+            <div class="num">工单编号： {{ list.id }}</div>
             <div class="business">
-                客户名称： {{ user.business }}
+                客户名称： {{ list.sales_name }}
                 <a href="">查看订单</a>
             </div>
         </div>
         <div class="faq-content">
             <div
                 class="faq-wrap"
-                v-for="(item, index) in user.desc"
+                v-for="(item, index) in list.reply_data"
                 :key="index"
             >
-                <div class="tit">{{ item.key }}</div>
-                <div class="con">
-                    {{ item.ques }}
-                    <img :src="item.image" />
+                <div class="tit">{{ item.key == 1 ? "问题" : "回复" }}</div>
+                <div class="con reply-con">
+                    {{ item.content }}
                 </div>
                 <div class="reply">
-                    提交人：{{ item.from }} 提交时间：{{ item.time }}
+                    提交人：{{ item.user_id }} 提交时间：{{ item.create_time }}
                 </div>
             </div>
             <!-- <div class="faq-wrap">
@@ -73,17 +72,17 @@ import wangEditor from "../components/wangEditor";
 export default {
     mounted() {
         const id = this.$route.params.id;
+        console.log(id);
         this.getData(id);
+    },
+    updated(){
+        var replycon = document.getElementsByClassName("reply-con");
+        replycon.innerHTML = replycon.innerText;
     },
     data() {
         return {
             flag: false,
-            user: {
-                key: "",
-                title: "",
-                number: "",
-                business: ""
-            },
+            list: '',
             editCon: ""
         };
     },
@@ -96,12 +95,8 @@ export default {
         },
         getData(id) {
             this.$api.getDetail(id).then(data => {
-                var list = data.data.data.list;
-                for(var prop in list){
-                    if(list[prop].id === id){
-                        this.user = list[prop];
-                    }
-                }
+                this.list = data.data.data;
+                console.log(this.list);
             });
         },
         replyClick() {

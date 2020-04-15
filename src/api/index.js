@@ -27,9 +27,9 @@ export default {
             url: urls.business
         })
     },
-    getDetail(){
+    getDetail(id){
         return myAjax({
-            url: urls.detail
+            url: urls.detail + id
         })
     }
 }

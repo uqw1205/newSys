@@ -15,8 +15,8 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in list" :key="index">
-                    <td>{{ item.type }}</td>
-                    <td>{{ item.number }}</td>
+                    <td>{{ item.type_name }}问题</td>
+                    <td>{{ item.id }}</td>
                     <td>
                         <router-link
                             tag="a"
@@ -24,11 +24,11 @@
                             >{{ item.title }}</router-link
                         >
                     </td>
-                    <td>{{ item.business }}</td>
-                    <td>{{ item.status }}</td>
-                    <td>{{ item.follow }}</td>
-                    <td>{{ item.time }}</td>
-                    <td>{{ item.from }}</td>
+                    <td>{{ item.sales_name }}</td>
+                    <td>{{ item.status == 1 ? "回复" : "完成" }}</td>
+                    <td>{{ item.member_group_id }}</td>
+                    <td>{{ new Date(item.create_time) }}</td>
+                    <td>{{ item.user_id }}</td>
                 </tr>
             </tbody>
         </table>
@@ -80,8 +80,9 @@ export default {
     },
     created() {
         this.$api.getOrder().then(data => {
+            console.log(data);
             this.list = data.data.data.list;
-            this.total = data.data.data.total;
+            this.total = +data.data.data.total;
             // console.log(this.list)
         });
     }

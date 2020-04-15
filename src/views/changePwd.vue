@@ -3,15 +3,15 @@
         <form action="">
             <div>
                 <label for="">原密码</label>
-                <input type="text"/>
+                <input type="password"/>
             </div>
             <div>
                 <label for="">新密码</label>
-                <input type="text"/>
+                <input type="password"/>
             </div>
             <div>
                 <label for="">确定密码</label>
-                <input type="text"/>
+                <input type="password"/>
             </div>
             <div>
                 <label for=""></label>

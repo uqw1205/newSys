@@ -20,7 +20,7 @@
                     <td>
                         <router-link
                             tag="a"
-                            :to="{ name: 'showFaq', params: { id: item.id }}"
+                            :to="{ name: 'showFaq', params: { id: item.id } }"
                             >{{ item.title }}</router-link
                         >
                     </td>
@@ -32,6 +32,13 @@
                 </tr>
             </tbody>
         </table>
+        <el-pagination
+            v-show="total > 0"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="getList"
+        />
     </div>
 </template>
 
@@ -39,24 +46,47 @@
 export default {
     beforeRouteEnter(to, from, next) {
         // console.log(this);
-        next((vm) => {
+        next(vm => {
             // console.log(vm);
         });
     },
     data() {
         return {
             list: [],
+            total: 0,
+            listLoading: true,
+            listQuery: {
+                page: 1,
+                limit: 2,
+                importance: undefined,
+                title: undefined,
+                type: undefined,
+                sort: "+id"
+            }
         };
     },
+    methods: {
+        getList() {
+            this.listLoading = true;
+            this.$api.getOrder(this.listQuery).then(data => {
+                this.list = data.data.data.list;
+                this.total = data.data.data.total;
+                // console.log(this.list)
+                setTimeout(() => {
+                    this.listLoading = false;
+                }, 1.5 * 1000);
+            });
+        }
+    },
     created() {
-        this.$api.getOrder().then((data) => {
+        this.$api.getOrder().then(data => {
             this.list = data.data.data.list;
+            this.total = data.data.data.total;
             // console.log(this.list)
         });
-    },
+    }
 };
 </script>
-
 <style lang="scss" scoped>
 table {
     width: 100%;
@@ -89,5 +119,9 @@ table {
             }
         }
     }
+}
+.el-pagination {
+    text-align: center;
+    margin-top: 20px;
 }
 </style>

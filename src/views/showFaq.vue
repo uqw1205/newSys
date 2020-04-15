@@ -49,13 +49,17 @@
             <div class="faq-con" v-if="flag">
                 <form action="">
                     <div>
-                        <label for="">回复：</label>
-                        <textarea name="" id="" cols="30" rows="10"></textarea>
+                        <wangEditor ref="editcon"></wangEditor>
                         <p>请输入具体问题，可以直接截图粘贴（ctrl+v）</p>
                     </div>
                     <div>
                         <label for=""></label>
-                        <input type="button" class="formbtn" value="提交" />
+                        <input
+                            type="button"
+                            class="formbtn"
+                            value="提交"
+                            @click="replyClick"
+                        />
                     </div>
                 </form>
             </div>
@@ -64,10 +68,11 @@
 </template>
 
 <script>
+import wangEditor from "../components/wangEditor";
+
 export default {
     mounted() {
         const id = this.$route.params.id;
-        console.log(id);
         this.getData(id);
     },
     data() {
@@ -77,25 +82,48 @@ export default {
                 key: "",
                 title: "",
                 number: "",
-                business: "",
+                business: ""
             },
+            editCon: ""
         };
+    },
+    components: {
+        wangEditor
     },
     methods: {
         handleClick() {
             this.flag = !this.flag;
         },
         getData(id) {
-            this.$api.getDetail(id).then((data) => {
-                // console.log(data.data.data.list);
-                this.user = data.data.data.list;
+            this.$api.getDetail(id).then(data => {
+                var list = data.data.data.list;
+                for(var prop in list){
+                    if(list[prop].id === id){
+                        this.user = list[prop];
+                    }
+                }
             });
         },
-    },
+        replyClick() {
+            var text = document.getElementsByClassName("w-e-text")[0];
+            var faqCon = document.getElementsByClassName("faq-content")[0];
+            var div = document.createElement("div");
+            div.className = "faq-wrap"
+            div.innerHTML = `<div class="tit">回复</div>
+                <div class="con">
+                   ${text.innerHTML}
+                </div>
+                <div class="reply">
+                    提交人： 提交时间： ${new Date().getFullYear()} 年 ${new Date().getMonth() + 1} 月 ${new Date().getDate()} 日
+                </div>`
+           faqCon.appendChild(div); 
+           text.innerHTML = "";
+        }
+    }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .faq-tit {
     background: #fcf8e3;
     color: #8a6d3b;
@@ -155,21 +183,10 @@ export default {
         margin: 20px;
     }
     .faq-con {
-        padding-left: 20px;
         margin-top: 20px;
-        label {
-            display: inline-block;
-            vertical-align: top;
-            width: 60px;
-            font-size: 15px;
-        }
-        textarea {
-            border: 1px solid #bbb;
-            border-radius: 2px;
-            width: 400px;
-        }
+        margin-bottom: 20px;
         p {
-            margin-left: 60px;
+            margin-top: 20px;
             font-size: 14px;
             color: #666;
         }

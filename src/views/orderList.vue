@@ -25,9 +25,26 @@
                         >
                     </td>
                     <td>{{ item.sales_name }}</td>
-                    <td>{{ item.status == 1 ? "回复" : "完成" }}</td>
+                    <td
+                        class="status"
+                        :class="
+                            item.status == 1
+                                ? ''
+                                : item.status == 8
+                                ? 'green'
+                                : 'red'
+                        "
+                    >
+                        {{
+                            item.status == 1
+                                ? "已回复"
+                                : item.status == 0
+                                ? "待处理"
+                                : "已完成"
+                        }}
+                    </td>
                     <td>{{ item.member_group_id }}</td>
-                    <td>{{ new Date(item.create_time) }}</td>
+                    <td>{{ +item.create_time | formatDate }}</td>
                     <td>{{ item.user_id }}</td>
                 </tr>
             </tbody>
@@ -46,7 +63,7 @@
 export default {
     beforeRouteEnter(to, from, next) {
         // console.log(this);
-        next(vm => {
+        next((vm) => {
             // console.log(vm);
         });
     },
@@ -61,14 +78,29 @@ export default {
                 importance: undefined,
                 title: undefined,
                 type: undefined,
-                sort: "+id"
-            }
+                sort: "+id",
+            },
         };
+    },
+    filters: {
+        formatDate: function(value) {
+            let date = new Date(value * 1000);
+            let y = date.getFullYear();
+            let MM = date.getMonth() + 1;
+            MM = MM < 10 ? "0" + MM : MM;
+            let d = date.getDate();
+            d = d < 10 ? "0" + d : d;
+            let h = date.getHours();
+            h = h < 10 ? "0" + h : h;
+            let m = date.getMinutes();
+            m = m < 10 ? "0" + m : m;
+            return y + "-" + MM + "-" + d + " " + h + ":" + m;
+        },
     },
     methods: {
         getList() {
             this.listLoading = true;
-            this.$api.getOrder(this.listQuery).then(data => {
+            this.$api.getOrder(this.listQuery).then((data) => {
                 this.list = data.data.data.list;
                 this.total = data.data.data.total;
                 // console.log(this.list)
@@ -76,16 +108,16 @@ export default {
                     this.listLoading = false;
                 }, 1.5 * 1000);
             });
-        }
+        },
     },
     created() {
-        this.$api.getOrder().then(data => {
+        this.$api.getOrder().then((data) => {
             console.log(data);
             this.list = data.data.data.list;
             this.total = +data.data.data.total;
             // console.log(this.list)
         });
-    }
+    },
 };
 </script>
 <style lang="scss" scoped>
@@ -104,10 +136,19 @@ table {
     tbody {
         background: #fff;
         td {
-            line-height: 37px;
-            font-size: 14px;
+            line-height: 35px;
+            font-size: 13px;
             font-family: arial;
             text-align: center;
+            &.status {
+                color: #00d0ff;
+                &.red {
+                    color: red;
+                }
+                &.green {
+                    color: green;
+                }
+            }
             a {
                 text-align: left;
                 display: block;

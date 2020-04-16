@@ -15,8 +15,8 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in list" :key="index">
-                    <td>{{ item.type }}</td>
-                    <td>{{ item.number }}</td>
+                    <td>{{ item.type_name }}问题</td>
+                    <td>{{ item.id }}</td>
                     <td>
                         <router-link
                             tag="a"
@@ -24,11 +24,28 @@
                             >{{ item.title }}</router-link
                         >
                     </td>
-                    <td>{{ item.business }}</td>
-                    <td>{{ item.status }}</td>
-                    <td>{{ item.follow }}</td>
-                    <td>{{ item.time }}</td>
-                    <td>{{ item.from }}</td>
+                    <td>{{ item.sales_name }}</td>
+                    <td
+                        class="status"
+                        :class="
+                            item.status == 1
+                                ? ''
+                                : item.status == 8
+                                ? 'green'
+                                : 'red'
+                        "
+                    >
+                        {{
+                            item.status == 1
+                                ? "已回复"
+                                : item.status == 0
+                                ? "待处理"
+                                : "已完成"
+                        }}
+                    </td>
+                    <td>{{ item.member_group_id }}</td>
+                    <td>{{ +item.create_time | formatDate }}</td>
+                    <td>{{ item.user_id }}</td>
                 </tr>
             </tbody>
         </table>
@@ -46,7 +63,7 @@
 export default {
     beforeRouteEnter(to, from, next) {
         // console.log(this);
-        next(vm => {
+        next((vm) => {
             // console.log(vm);
         });
     },
@@ -61,14 +78,29 @@ export default {
                 importance: undefined,
                 title: undefined,
                 type: undefined,
-                sort: "+id"
-            }
+                sort: "+id",
+            },
         };
+    },
+    filters: {
+        formatDate: function(value) {
+            let date = new Date(value * 1000);
+            let y = date.getFullYear();
+            let MM = date.getMonth() + 1;
+            MM = MM < 10 ? "0" + MM : MM;
+            let d = date.getDate();
+            d = d < 10 ? "0" + d : d;
+            let h = date.getHours();
+            h = h < 10 ? "0" + h : h;
+            let m = date.getMinutes();
+            m = m < 10 ? "0" + m : m;
+            return y + "-" + MM + "-" + d + " " + h + ":" + m;
+        },
     },
     methods: {
         getList() {
             this.listLoading = true;
-            this.$api.getOrder(this.listQuery).then(data => {
+            this.$api.getOrder(this.listQuery).then((data) => {
                 this.list = data.data.data.list;
                 this.total = data.data.data.total;
                 // console.log(this.list)
@@ -76,15 +108,19 @@ export default {
                     this.listLoading = false;
                 }, 1.5 * 1000);
             });
-        }
+        },
     },
     created() {
-        this.$api.getOrder().then(data => {
-            this.list = data.data.data.list;
-            this.total = data.data.data.total;
-            // console.log(this.list)
+        this.$api.getOrder().then((data) => {
+            var list = [];
+            for (var i = 0; i < data.data.data.list.length; i++) {
+                if (data.data.data.list[i].status == 0) {
+                    list.push(data.data.data.list[i]);
+                }
+            }
+            this.list = list;
         });
-    }
+    },
 };
 </script>
 <style lang="scss" scoped>
@@ -103,10 +139,19 @@ table {
     tbody {
         background: #fff;
         td {
-            line-height: 37px;
-            font-size: 14px;
+            line-height: 35px;
+            font-size: 13px;
             font-family: arial;
             text-align: center;
+            &.status {
+                color: #00d0ff;
+                &.red {
+                    color: red;
+                }
+                &.green {
+                    color: green;
+                }
+            }
             a {
                 text-align: left;
                 display: block;

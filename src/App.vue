@@ -11,6 +11,7 @@
 <script>
 import Header from "./components/Header";
 import Lside from './components/Lside'
+
 export default {
     components: {
 		Header,

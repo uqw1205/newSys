@@ -5,41 +5,49 @@
             <div class="num">工单编号： {{ list.id }}</div>
             <div class="business">
                 客户名称： {{ list.sales_name }}
-                <a href="">查看订单</a>
+                <a
+                    :href="
+                        'http://a.msmn.cn/index.php/sales/view/id/' +
+                            list.sales_id +
+                            '.html'
+                    "
+                    target="_blank"
+                    >查看订单</a
+                >
             </div>
         </div>
         <div class="faq-content">
+            <div class="faq-wrap">
+                <div class="tit">问题</div>
+                <div
+                    class="con reply-con"
+                    v-html="unescape(list.content)"
+                ></div>
+                <div class="reply">
+                    <span> 提交人：{{ list.user_id }}</span
+                    ><span> 提交时间：{{ list.create_time | formatDate }}</span>
+                </div>
+            </div>
             <div
                 class="faq-wrap"
                 v-for="(item, index) in list.reply_data"
                 :key="index"
             >
-                <div class="tit">{{ item.key == 1 ? "问题" : "回复" }}</div>
-                <div class="con reply-con">
-                    {{ item.content }}
+                <div
+                    class="tit"
+                    :class="item.user_id !== list.user_id ? 'answer' : ''"
+                >
+                    {{ item.user_id == list.user_id ? "补充" : "回复" }}
                 </div>
+                <div
+                    class="con reply-con"
+                    v-html="unescape(item.content)"
+                ></div>
                 <div class="reply">
-                    提交人：{{ item.user_id }} 提交时间：{{ item.create_time }}
+                    <span> 提交人：{{ item.user_id }}</span
+                    ><span> 提交时间：{{ item.create_time | formatDate }}</span>
                 </div>
             </div>
-            <!-- <div class="faq-wrap">
-                <div class="tit">补充</div>
-                <div class="con">
-                    {{ user.desc }}
-                </div>
-                <div class="reply">
-                    提交人： 提交时间：
-                </div>
-            </div>
-            <div class="faq-wrap">
-                <div class="tit answer">回复</div>
-                <div class="con">
-                    {{ user.desc }}
-                </div>
-                <div class="reply">
-                    提交人： 提交时间：
-                </div>
-            </div> -->
         </div>
         <div class="faq-reply">
             <button class="showbtn" @click="handleClick" v-if="!flag">
@@ -72,49 +80,102 @@ import wangEditor from "../components/wangEditor";
 export default {
     mounted() {
         const id = this.$route.params.id;
-        console.log(id);
+        this.id = id;
+        console.log(this.id);
         this.getData(id);
-    },
-    updated(){
-        var replycon = document.getElementsByClassName("reply-con");
-        replycon.innerHTML = replycon.innerText;
     },
     data() {
         return {
-            flag: false,
-            list: '',
-            editCon: ""
+            id: "",
+            flag: false, //显示回复框
+            list: "", //
+            editCon: "", //编辑框内容
         };
     },
+    filters: {
+        // 时间戳
+        formatDate: function(value) {
+            let date = new Date(value * 1000);
+            let y = date.getFullYear();
+            let MM = date.getMonth() + 1;
+            MM = MM < 10 ? "0" + MM : MM;
+            let d = date.getDate();
+            d = d < 10 ? "0" + d : d;
+            let h = date.getHours();
+            h = h < 10 ? "0" + h : h;
+            let m = date.getMinutes();
+            m = m < 10 ? "0" + m : m;
+            return y + "-" + MM + "-" + d + " " + h + ":" + m;
+        },
+    },
     components: {
-        wangEditor
+        wangEditor, //编辑框
+    },
+    updated() {
+        // 更改问题中的图片地址  （上线后可删除）
+        var replycon = document.getElementsByClassName("reply-con");
+        for (var i = 0; i < replycon.length; i++) {
+            var img = replycon[i].getElementsByTagName("img");
+            for (var j = 0; j < img.length; j++) {
+                if (img[j].src.indexOf("localhost") > 0) {
+                    var src = img[j].src.replace("http://localhost:8080", "");
+                    img[j].src = "http://a.msmn.cn/" + src;
+                }
+            }
+        }
     },
     methods: {
+        // 显示回复框
         handleClick() {
             this.flag = !this.flag;
         },
+        // 通过id获取工单数据
         getData(id) {
-            this.$api.getDetail(id).then(data => {
+            this.$api.getDetail(id).then((data) => {
                 this.list = data.data.data;
-                console.log(this.list);
             });
         },
+        // 转义
+        unescape: function(html) {
+            html += "";
+            return html
+                .replace(html ? /&(?!#?\w+;)/g : /&/g, "&amp;")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .replace(/&nbsp;/g, " ");
+        },
+        // 点击提交
         replyClick() {
             var text = document.getElementsByClassName("w-e-text")[0];
             var faqCon = document.getElementsByClassName("faq-content")[0];
             var div = document.createElement("div");
-            div.className = "faq-wrap"
-            div.innerHTML = `<div class="tit">回复</div>
-                <div class="con">
+            var nowTime = `${new Date().getFullYear()}-${new Date().getMonth() +
+                1}-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}`;
+            var replyData = {
+                id: "",
+                question_id: this.id,
+                content: text.innerHTML,
+                type_id: 0,
+                user_id: 0,
+                create_time: nowTime,
+            };
+            console.log(replyData);
+            div.className = "faq-wrap";
+            div.innerHTML = `<div class="tit answer">回复</div>
+                <div class="con reply-con">
                    ${text.innerHTML}
                 </div>
                 <div class="reply">
-                    提交人： 提交时间： ${new Date().getFullYear()} 年 ${new Date().getMonth() + 1} 月 ${new Date().getDate()} 日
-                </div>`
-           faqCon.appendChild(div); 
-           text.innerHTML = "";
-        }
-    }
+                    <span>提交人： </span><span>提交时间： ${nowTime}</span>
+                </div>`;
+            faqCon.appendChild(div); //将回复内容插入到页面
+            text.innerHTML = "";
+
+            // this.$api.getOrder(replyData).then((data) => {});
+        },
+    },
 };
 </script>
 
@@ -152,16 +213,22 @@ export default {
         }
     }
     .con {
-        font-size: 14px;
-        padding: 10px;
-        background: #eee;
+        font-size: 13px;
+        padding: 20px 15px;
+        background: #f5f5f5;
         margin: 10px 0;
         border-radius: 2px;
+        line-height: 2;
+        border: 1px solid #e2e2e2;
+        color: #272727;
     }
     .reply {
         border-top: 1px solid #eee;
         font-size: 13px;
         padding-top: 15px;
+        span {
+            margin-right: 20px;
+        }
     }
 }
 .faq-reply {

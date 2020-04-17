@@ -79,9 +79,9 @@ import wangEditor from "../components/wangEditor";
 
 export default {
     mounted() {
+        // 取到问题的id
         const id = this.$route.params.id;
         this.id = id;
-        console.log(this.id);
         this.getData(id);
     },
     data() {
@@ -132,6 +132,7 @@ export default {
         // 通过id获取工单数据
         getData(id) {
             this.$api.getDetail(id).then((data) => {
+                console.log(data);
                 this.list = data.data.data;
             });
         },
@@ -154,26 +155,28 @@ export default {
             var nowTime = `${new Date().getFullYear()}-${new Date().getMonth() +
                 1}-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}`;
             var replyData = {
-                id: "",
-                question_id: this.id,
-                content: text.innerHTML,
-                type_id: 0,
-                user_id: 0,
-                create_time: nowTime,
+                // 'id': `${Math.floor(Math.random() * 400)}`,
+                "id": this.id,
+                'question_id': this.id,
+                'content': "" + text.innerHTML,
+                'type_id': '0',
+                'user_id': '67',
+                'create_time': `${Math.floor(new Date().getTime() / 1000)}`,
             };
             console.log(replyData);
+            this.$api.replyOrder(replyData).then((data) => {
+                console.log(data);
+            });
             div.className = "faq-wrap";
             div.innerHTML = `<div class="tit answer">回复</div>
                 <div class="con reply-con">
                    ${text.innerHTML}
                 </div>
                 <div class="reply">
-                    <span>提交人： </span><span>提交时间： ${nowTime}</span>
+                    <span>提交人：67 </span><span>提交时间： ${nowTime}</span>
                 </div>`;
             faqCon.appendChild(div); //将回复内容插入到页面
             text.innerHTML = "";
-
-            // this.$api.getOrder(replyData).then((data) => {});
         },
     },
 };

@@ -16,10 +16,14 @@ export default {
             }
         })
     },
-    getOrder(){
+    // 获取所有工单
+    getOrder(page){
         return myAjax({
             url: urls.orderList,
             method: "get",
+            params: {
+                ...page
+            }
         })
     },
     getBusiness(){
@@ -28,19 +32,21 @@ export default {
             method: "get",
         })
     },
+    // 工单详情
     getDetail(id){
         return myAjax({
             url: urls.detail + id,
             method: "get",
         })
     },
+    // 回复工单
     replyOrder(data){
         return myAjax({
             url: urls.replyOrder,
-            method: "post",
+            method: "POST",
             params: {
                 ...data
             }
         })
-    }
+    },
 }

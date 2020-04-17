@@ -17,14 +17,14 @@
                 <tr v-for="(item, index) in list" :key="index">
                     <td>{{ item.type_name }}问题</td>
                     <td>{{ item.id }}</td>
-                    <td>
+                    <td class="title">
                         <router-link
                             tag="a"
                             :to="{ name: 'showFaq', params: { id: item.id } }"
                             >{{ item.title }}</router-link
                         >
                     </td>
-                    <td>{{ item.sales_name }}</td>
+                    <td class="salename">{{ item.sales_name }}</td>
                     <td
                         class="status"
                         :class="
@@ -49,7 +49,7 @@
                 </tr>
             </tbody>
         </table>
-        <el-pagination
+        <pagination
             v-show="total > 0"
             :total="total"
             :page.sync="listQuery.page"
@@ -60,29 +60,27 @@
 </template>
 
 <script>
+import Pagination from "../components/Pagination";
 export default {
     beforeRouteEnter(to, from, next) {
-        // console.log(this);
         next((vm) => {
             // console.log(vm);
         });
+    },
+    components: {
+        Pagination,
     },
     data() {
         return {
             list: [],
             total: 0,
-            listLoading: true,
             listQuery: {
                 page: 1,
-                limit: 2,
-                importance: undefined,
-                title: undefined,
-                type: undefined,
-                sort: "+id",
             },
         };
     },
     filters: {
+        // 时间戳
         formatDate: function(value) {
             let date = new Date(value * 1000);
             let y = date.getFullYear();
@@ -99,23 +97,20 @@ export default {
     },
     methods: {
         getList() {
-            this.listLoading = true;
-            this.$api.getOrder(this.listQuery).then((data) => {
+            var page = {
+                p: this.listQuery.page,
+            };
+            this.$api.getOrder(page).then((data) => {
                 this.list = data.data.data.list;
-                this.total = data.data.data.total;
-                // console.log(this.list)
-                setTimeout(() => {
-                    this.listLoading = false;
-                }, 1.5 * 1000);
             });
         },
     },
     created() {
+        // 渲染表格
         this.$api.getOrder().then((data) => {
             console.log(data);
             this.list = data.data.data.list;
             this.total = +data.data.data.total;
-            // console.log(this.list)
         });
     },
 };
@@ -140,6 +135,10 @@ table {
             font-size: 13px;
             font-family: arial;
             text-align: center;
+            &.salename {
+                text-align: left;
+                padding: 0 15px;
+            }
             &.status {
                 color: #00d0ff;
                 &.red {
@@ -148,6 +147,9 @@ table {
                 &.green {
                     color: green;
                 }
+            }
+            &.title {
+                width: 45%;
             }
             a {
                 text-align: left;
